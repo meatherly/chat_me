@@ -11,7 +11,8 @@ defmodule ChatMe.Application do
       # Starts a worker by calling: ChatMe.Worker.start_link(arg)
       {Registry, keys: :duplicate, name: UsernameRegistry},
       {ChatMe.History, []},
-      {ChatMe.TCPServer, 4444}
+      {DynamicSupervisor, name: ChatMe.ConnectionSupervisor, strategy: :one_for_one},
+      {ChatMe.TCPServer, 4444},
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

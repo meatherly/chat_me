@@ -1,15 +1,17 @@
 defmodule ChatMe.Connection do
-  use GenServer
+  use GenServer, restart: :temporary
   require Logger
   alias ChatMe.{Message, Utils}
 
   defstruct client: nil, joined: false, username: nil
 
-  def init(socket) do
-    send(self(), :get_username)
-    {:ok, client} = :gen_tcp.accept(socket)
+  def start_link(client) do
+    GenServer.start_link(ChatMe.Connection, client)
+  end
+
+  def init(client) do
+    Logger.info "Starting Connection for client"
     :gen_tcp.send(client, "Welcome to my chat server! What is your nickname?\n")
-    :ok = :gen_tcp.controlling_process(client, self())
     {:ok, %__MODULE__{client: client}}
   end
 
